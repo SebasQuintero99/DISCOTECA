@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Discoteca - Identificación Biométrica</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .fingerprint-scanner {
+            background: radial-gradient(circle, #3b82f6 0%, #1e40af 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .status-vip { background-color: #fbbf24; color: #92400e; }
+        .status-activo { background-color: #34d399; color: #065f46; }
+        .status-suspendido { background-color: #f87171; color: #991b1b; }
+        
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            background-color: #374151;
+        }
+        .sidebar-item.active {
+            background-color: #3b82f6;
+            border-right: 4px solid #60a5fa;
+        }
+        
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+        <!-- Logo -->
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-xl font-bold text-blue-400">🎵 Discoteca System</h1>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="flex-1 py-4">
+            <div class="px-3 space-y-2">
+                <button id="nav-entrada" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left active">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.625 2.655A9 9 0 0119 11a1 1 0 11-2 0 7 7 0 00-9.625-6.492 1 1 0 11-.75-1.853zM4.662 4.959A1 1 0 014.75 6.37 6 6 0 016 11a1 1 0 11-2 0 8 8 0 00-1.308-4.370 1 1 0 011.97-.671zM3 11a5 5 0 005 5 1 1 0 110 2A7 7 0 011 11a1 1 0 112 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">Entrada de Clientes</span>
+                </button>
+                
+                <button id="nav-registro" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">Registro de Clientes</span>
+                </button>
+                
+                <button id="nav-lista" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="font-medium">Lista de Clientes</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-700">
+            <div class="text-xs text-gray-400 text-center">
+                Sistema Biométrico v1.0
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-800 border-b border-gray-700 px-6 py-4">
+            <h2 id="pageTitle" class="text-2xl font-semibold text-white">Entrada de Clientes</h2>
+        </header>
+        
+        <!-- Content Area -->
+        <main class="flex-1 p-6 overflow-auto">
+            <!-- Sección: Entrada de Clientes -->
+            <div id="entrada-section" class="section active">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-gray-800 rounded-lg p-8">
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-semibold mb-4">Identificación Biométrica</h3>
+                            <p class="text-gray-400 mb-6">Coloca tu dedo en el escáner para acceder</p>
+                            
+                            <div id="scannerArea" class="fingerprint-scanner w-64 h-64 mx-auto rounded-full flex items-center justify-center cursor-pointer mb-6">
+                                <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6.625 2.655A9 9 0 0119 11a1 1 0 11-2 0 7 7 0 00-9.625-6.492 1 1 0 11-.75-1.853zM4.662 4.959A1 1 0 014.75 6.37 6 6 0 016 11a1 1 0 11-2 0 8 8 0 00-1.308-4.370 1 1 0 011.97-.671zM3 11a5 5 0 005 5 1 1 0 110 2A7 7 0 011 11a1 1 0 112 0z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Campo de prueba para hash biométrico -->
+                        <div class="mb-6 bg-gray-700 rounded-lg p-4">
+                            <label class="block text-sm font-medium mb-2">🧪 Modo de Prueba:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="testHash" placeholder="Ingresa un hash de huella registrado" class="flex-1 px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white text-sm">
+                                <button type="button" id="testIdentification" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm font-medium">
+                                    Probar
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Ingresa el hash de huella de un cliente registrado para probar la identificación</p>
+                        </div>
+                        
+                        <!-- Resultado de Identificación -->
+                        <div id="identificationResult" class="hidden">
+                            <div class="bg-gray-700 rounded-lg p-6 text-center">
+                                <div id="clientInfo">
+                                    <!-- Información del cliente se mostrará aquí -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección: Registro de Clientes -->
+            <div id="registro-section" class="section">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-gray-800 rounded-lg p-8">
+                        <h3 class="text-2xl font-semibold mb-6 text-center">Nuevo Cliente</h3>
+                        
+                        <form id="clientForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Correo Electrónico:</label>
+                                    <input type="email" id="correo" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Teléfono:</label>
+                                    <input type="tel" id="telefono" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Fecha de Nacimiento:</label>
+                                    <input type="date" id="fechaNacimiento" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Estatus:</label>
+                                    <select id="estatus" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
+                                        <option value="activo">Activo</option>
+                                        <option value="vip">VIP</option>
+                                        <option value="suspendido">Suspendido</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Huella Biométrica:</label>
+                                <button type="button" id="captureFingerprint" class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-lg transition duration-200">
+                                    🔒 Capturar Huella Biométrica
+                                </button>
+                                <input type="hidden" id="huellaBiometrica">
+                            </div>
+                            
+                            <button type="submit" class="w-full px-6 py-4 bg-green-600 hover:bg-green-700 rounded-md font-medium text-lg transition duration-200">
+                                ✅ Registrar Cliente
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección: Lista de Clientes -->
+            <div id="lista-section" class="section">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-semibold">Clientes Registrados</h3>
+                        <div class="text-sm text-gray-400">
+                            <span id="clientCount">0</span> clientes registrados
+                        </div>
+                    </div>
+                    <div id="clientsList" class="space-y-4">
+                        <!-- Lista de clientes se cargará aquí -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
