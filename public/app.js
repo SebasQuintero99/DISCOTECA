@@ -1,6 +1,7 @@
 class DiscotecaSystem {
     constructor() {
         this.currentSection = 'entrada';
+        this.testModeVisible = false;
         this.init();
     }
 
@@ -11,7 +12,6 @@ class DiscotecaSystem {
     }
 
     setupEventListeners() {
-        document.getElementById('scannerArea').addEventListener('click', () => this.simulateFingerprint());
         document.getElementById('captureFingerprint').addEventListener('click', () => this.captureFingerprint());
         document.getElementById('clientForm').addEventListener('submit', (e) => this.registerClient(e));
         document.getElementById('testIdentification').addEventListener('click', () => this.testHashIdentification());
@@ -54,7 +54,15 @@ class DiscotecaSystem {
 
     async loadClients() {
         try {
-            const response = await fetch('/api/clientes');
+            const response = await fetch('/api/clientes', {
+                headers: getAuthHeaders()
+            });
+            
+            if (response.status === 401) {
+                logout();
+                return;
+            }
+            
             const clients = await response.json();
             this.displayClients(clients);
         } catch (error) {
@@ -93,11 +101,12 @@ class DiscotecaSystem {
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-3">
                             <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-semibold text-lg">${client.correo.charAt(0).toUpperCase()}</span>
+                                <span class="text-white font-semibold text-lg">${client.nombres.charAt(0).toUpperCase()}${client.apellidos.charAt(0).toUpperCase()}</span>
                             </div>
                             <div>
-                                <p class="font-semibold text-lg">${client.correo}</p>
-                                <p class="text-sm text-gray-300">Tel: ${client.telefono} | Edad: ${edad} años</p>
+                                <p class="font-semibold text-lg">${client.nombres} ${client.apellidos}</p>
+                                <p class="text-sm text-gray-300">${client.correo}</p>
+                                <p class="text-sm text-gray-300">Tel: ${client.telefono} | Edad: ${edad} años | ${client.sexo}</p>
                             </div>
                         </div>
                         
@@ -139,11 +148,63 @@ class DiscotecaSystem {
                         ` : `
                             <p class="text-xs text-gray-500 mt-2">Sin visitas registradas</p>
                         `}
+                        
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="discotecaApp.editClient(${client.id})" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-xs font-medium transition duration-200">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="discotecaApp.deleteClient(${client.id})" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs font-medium transition duration-200">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
         }).join('');
+    }
+
+    handleScannerClick() {
+        // Usar timeout para evitar conflicto con doble clic
+        if (this.clickTimeout) {
+            clearTimeout(this.clickTimeout);
+            this.clickTimeout = null;
+            return; // Es un doble clic, no ejecutar toggle
+        }
+        
+        this.clickTimeout = setTimeout(() => {
+            this.toggleTestMode();
+            this.clickTimeout = null;
+        }, 300); // Esperar 300ms para detectar doble clic
+    }
+
+    toggleTestMode() {
+        const testModePanel = document.getElementById('testModePanel');
+        
+        if (this.testModeVisible) {
+            // Ocultar panel de prueba con animación
+            testModePanel.classList.add('test-panel-exit');
+            testModePanel.classList.remove('test-panel-enter');
+            
+            setTimeout(() => {
+                testModePanel.classList.add('hidden');
+                testModePanel.classList.remove('test-panel-exit');
+            }, 300);
+            
+            this.testModeVisible = false;
+        } else {
+            // Mostrar panel de prueba con animación suave
+            testModePanel.classList.remove('hidden');
+            testModePanel.classList.add('test-panel-enter');
+            testModePanel.classList.remove('test-panel-exit');
+            
+            this.testModeVisible = true;
+            
+            // Focus en el input para mejor UX
+            setTimeout(() => {
+                document.getElementById('testHash').focus();
+            }, 150);
+        }
     }
 
     simulateFingerprint() {
@@ -165,7 +226,12 @@ class DiscotecaSystem {
     testHashIdentification() {
         const testHash = document.getElementById('testHash').value.trim();
         if (!testHash) {
-            alert('Por favor ingresa un hash de huella para probar');
+            Swal.fire({
+                title: 'Advertencia',
+                text: 'Por favor ingresa un hash de huella para probar',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
@@ -187,11 +253,14 @@ class DiscotecaSystem {
         try {
             const response = await fetch('/api/identificar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ huellaBiometrica: fingerprintHash })
             });
+            
+            if (response.status === 401) {
+                logout();
+                return;
+            }
 
             const result = document.getElementById('identificationResult');
             const clientInfo = document.getElementById('clientInfo');
@@ -255,29 +324,45 @@ class DiscotecaSystem {
         event.preventDefault();
         
         const formData = {
+            nombres: document.getElementById('nombres').value,
+            apellidos: document.getElementById('apellidos').value,
             correo: document.getElementById('correo').value,
             telefono: document.getElementById('telefono').value,
             fechaNacimiento: document.getElementById('fechaNacimiento').value,
+            sexo: document.getElementById('sexo').value,
             estatus: document.getElementById('estatus').value,
             huellaBiometrica: document.getElementById('huellaBiometrica').value
         };
 
         if (!formData.huellaBiometrica) {
-            alert('Por favor captura la huella biométrica primero');
+            Swal.fire({
+                title: 'Advertencia',
+                text: 'Por favor captura la huella biométrica primero',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
 
         try {
             const response = await fetch('/api/clientes', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(formData)
             });
+            
+            if (response.status === 401) {
+                logout();
+                return;
+            }
 
             if (response.ok) {
-                alert('Cliente registrado exitosamente');
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Cliente registrado exitosamente',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 document.getElementById('clientForm').reset();
                 document.getElementById('huellaBiometrica').value = '';
                 
@@ -297,15 +382,243 @@ class DiscotecaSystem {
                 }, 1000);
             } else {
                 const error = await response.json();
-                alert('Error: ' + error.error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error: ' + error.error,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         } catch (error) {
             console.error('Error registrando cliente:', error);
-            alert('Error al registrar cliente');
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al registrar cliente',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
+    async editClient(clientId) {
+        try {
+            // Obtener datos del cliente
+            const response = await fetch('/api/clientes', {
+                headers: getAuthHeaders()
+            });
+            
+            if (response.status === 401) {
+                logout();
+                return;
+            }
+            
+            const clients = await response.json();
+            const client = clients.find(c => c.id === clientId);
+            
+            if (!client) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Cliente no encontrado',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            // Mostrar formulario de edición
+            const { value: formValues } = await Swal.fire({
+                title: '✏️ Editar Cliente',
+                html: `
+                    <div style="text-align: left; max-width: 100%;">
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">👤 Nombres</label>
+                            <input id="swal-nombres" class="swal2-input" placeholder="Nombres" value="${client.nombres}" type="text" style="margin: 0;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">👥 Apellidos</label>
+                            <input id="swal-apellidos" class="swal2-input" placeholder="Apellidos" value="${client.apellidos}" type="text" style="margin: 0;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">📧 Correo Electrónico</label>
+                            <input id="swal-correo" class="swal2-input" placeholder="ejemplo@correo.com" value="${client.correo}" type="email" style="margin: 0;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">📱 Teléfono</label>
+                            <input id="swal-telefono" class="swal2-input" placeholder="Número de teléfono" value="${client.telefono}" type="tel" style="margin: 0;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">🎂 Fecha de Nacimiento</label>
+                            <input id="swal-fecha" class="swal2-input" type="date" value="${new Date(client.fechaNacimiento).toISOString().split('T')[0]}" style="margin: 0;">
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">👤 Sexo</label>
+                            <select id="swal-sexo" class="swal2-select" style="margin: 0;">
+                                <option value="masculino" ${client.sexo === 'masculino' ? 'selected' : ''}>👨 Masculino</option>
+                                <option value="femenino" ${client.sexo === 'femenino' ? 'selected' : ''}>👩 Femenino</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #d1d5db; font-weight: 500; font-size: 13px;">⭐ Estatus del Cliente</label>
+                            <select id="swal-estatus" class="swal2-select" style="margin: 0;">
+                                <option value="activo" ${client.estatus === 'activo' ? 'selected' : ''}>✅ Activo</option>
+                                <option value="vip" ${client.estatus === 'vip' ? 'selected' : ''}>🌟 VIP</option>
+                                <option value="suspendido" ${client.estatus === 'suspendido' ? 'selected' : ''}>❌ Suspendido</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    return {
+                        nombres: document.getElementById('swal-nombres').value,
+                        apellidos: document.getElementById('swal-apellidos').value,
+                        correo: document.getElementById('swal-correo').value,
+                        telefono: document.getElementById('swal-telefono').value,
+                        fechaNacimiento: document.getElementById('swal-fecha').value,
+                        sexo: document.getElementById('swal-sexo').value,
+                        estatus: document.getElementById('swal-estatus').value,
+                        huellaBiometrica: client.huellaBiometrica
+                    };
+                }
+            });
+
+            if (formValues) {
+                // Enviar actualización
+                const updateResponse = await fetch(`/api/clientes/${clientId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(formValues)
+                });
+                
+                if (updateResponse.status === 401) {
+                    logout();
+                    return;
+                }
+
+                if (updateResponse.ok) {
+                    Swal.fire({
+                        title: '¡Actualizado!',
+                        text: 'Cliente actualizado exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    this.loadClients();
+                } else {
+                    const error = await updateResponse.json();
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.error,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error editando cliente:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Error al editar cliente',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
+    async deleteClient(clientId) {
+        const result = await Swal.fire({
+            title: '🗑️ ¿Eliminar Cliente?',
+            text: 'Esta acción no se puede deshacer. El cliente será eliminado permanentemente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '🗑️ Sí, eliminar',
+            cancelButtonText: '❌ Cancelar',
+            width: '450px'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`/api/clientes/${clientId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                
+                if (response.status === 401) {
+                    logout();
+                    return;
+                }
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: 'Cliente eliminado exitosamente',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    this.loadClients();
+                } else {
+                    const error = await response.json();
+                    Swal.fire({
+                        title: 'Error',
+                        text: error.error,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Error eliminando cliente:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al eliminar cliente',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     }
 }
 
+// Variable global para acceso desde onclick
+let discotecaApp;
+
+// Función para verificar autenticación
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/login.html';
+        return false;
+    }
+    return token;
+}
+
+// Función para logout
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = '/login.html';
+}
+
+// Función para obtener headers con autorización
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    new DiscotecaSystem();
+    // Verificar autenticación antes de inicializar la app
+    if (checkAuth()) {
+        discotecaApp = new DiscotecaSystem();
+    }
 });

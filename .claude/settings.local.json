@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed:*)",
+      "Bash(npm install jsonwebtoken bcryptjs)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(node:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

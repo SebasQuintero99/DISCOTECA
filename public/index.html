@@ -3,198 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Discoteca - Identificación Biométrica</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Club Élite - La Experiencia Nocturna Definitiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .fingerprint-scanner {
-            background: radial-gradient(circle, #3b82f6 0%, #1e40af 100%);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .status-vip { background-color: #fbbf24; color: #92400e; }
-        .status-activo { background-color: #34d399; color: #065f46; }
-        .status-suspendido { background-color: #f87171; color: #991b1b; }
-        
-        .sidebar-item {
-            transition: all 0.2s ease;
-        }
-        .sidebar-item:hover {
-            background-color: #374151;
-        }
-        .sidebar-item.active {
-            background-color: #3b82f6;
-            border-right: 4px solid #60a5fa;
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
         }
         
-        .section {
-            display: none;
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6;
         }
-        .section.active {
-            display: block;
+        
+        .pulse-slow {
+            animation: pulse 3s infinite;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex">
-    <!-- Sidebar -->
-    <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
-        <!-- Logo -->
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="text-xl font-bold text-blue-400">🎵 Discoteca System</h1>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold gradient-text">🎵 Club Élite</div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex items-baseline space-x-8">
+                        <a href="#inicio" class="hover:text-blue-400 transition duration-200">Inicio</a>
+                        <a href="#experiencia" class="hover:text-blue-400 transition duration-200">Experiencia</a>
+                        <a href="#eventos" class="hover:text-blue-400 transition duration-200">Eventos</a>
+                        <a href="#contacto" class="hover:text-blue-400 transition duration-200">Contacto</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-400 hover:text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
         
-        <!-- Navigation -->
-        <nav class="flex-1 py-4">
-            <div class="px-3 space-y-2">
-                <button id="nav-entrada" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left active">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M6.625 2.655A9 9 0 0119 11a1 1 0 11-2 0 7 7 0 00-9.625-6.492 1 1 0 11-.75-1.853zM4.662 4.959A1 1 0 014.75 6.37 6 6 0 016 11a1 1 0 11-2 0 8 8 0 00-1.308-4.370 1 1 0 011.97-.671zM3 11a5 5 0 005 5 1 1 0 110 2A7 7 0 011 11a1 1 0 112 0z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="font-medium">Entrada de Clientes</span>
-                </button>
-                
-                <button id="nav-registro" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="font-medium">Registro de Clientes</span>
-                </button>
-                
-                <button id="nav-lista" class="sidebar-item w-full flex items-center px-3 py-3 rounded-lg text-left">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="font-medium">Lista de Clientes</span>
-                </button>
-            </div>
-        </nav>
-        
-        <!-- Footer -->
-        <div class="p-4 border-t border-gray-700">
-            <div class="text-xs text-gray-400 text-center">
-                Sistema Biométrico v1.0
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-gray-800">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#inicio" class="block px-3 py-2 hover:text-blue-400 transition duration-200">Inicio</a>
+                <a href="#experiencia" class="block px-3 py-2 hover:text-blue-400 transition duration-200">Experiencia</a>
+                <a href="#eventos" class="block px-3 py-2 hover:text-blue-400 transition duration-200">Eventos</a>
+                <a href="#contacto" class="block px-3 py-2 hover:text-blue-400 transition duration-200">Contacto</a>
             </div>
         </div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-        <!-- Header -->
-        <header class="bg-gray-800 border-b border-gray-700 px-6 py-4">
-            <h2 id="pageTitle" class="text-2xl font-semibold text-white">Entrada de Clientes</h2>
-        </header>
-        
-        <!-- Content Area -->
-        <main class="flex-1 p-6 overflow-auto">
-            <!-- Sección: Entrada de Clientes -->
-            <div id="entrada-section" class="section active">
-                <div class="max-w-2xl mx-auto">
-                    <div class="bg-gray-800 rounded-lg p-8">
-                        <div class="text-center mb-8">
-                            <h3 class="text-2xl font-semibold mb-4">Identificación Biométrica</h3>
-                            <p class="text-gray-400 mb-6">Coloca tu dedo en el escáner para acceder</p>
-                            
-                            <div id="scannerArea" class="fingerprint-scanner w-64 h-64 mx-auto rounded-full flex items-center justify-center cursor-pointer mb-6">
-                                <svg class="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M6.625 2.655A9 9 0 0119 11a1 1 0 11-2 0 7 7 0 00-9.625-6.492 1 1 0 11-.75-1.853zM4.662 4.959A1 1 0 014.75 6.37 6 6 0 016 11a1 1 0 11-2 0 8 8 0 00-1.308-4.370 1 1 0 011.97-.671zM3 11a5 5 0 005 5 1 1 0 110 2A7 7 0 011 11a1 1 0 112 0z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        
-                        <!-- Campo de prueba para hash biométrico -->
-                        <div class="mb-6 bg-gray-700 rounded-lg p-4">
-                            <label class="block text-sm font-medium mb-2">🧪 Modo de Prueba:</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="testHash" placeholder="Ingresa un hash de huella registrado" class="flex-1 px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white text-sm">
-                                <button type="button" id="testIdentification" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm font-medium">
-                                    Probar
-                                </button>
-                            </div>
-                            <p class="text-xs text-gray-400 mt-2">Ingresa el hash de huella de un cliente registrado para probar la identificación</p>
-                        </div>
-                        
-                        <!-- Resultado de Identificación -->
-                        <div id="identificationResult" class="hidden">
-                            <div class="bg-gray-700 rounded-lg p-6 text-center">
-                                <div id="clientInfo">
-                                    <!-- Información del cliente se mostrará aquí -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Sección: Registro de Clientes -->
-            <div id="registro-section" class="section">
-                <div class="max-w-2xl mx-auto">
-                    <div class="bg-gray-800 rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold mb-6 text-center">Nuevo Cliente</h3>
-                        
-                        <form id="clientForm" class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium mb-2">Correo Electrónico:</label>
-                                    <input type="email" id="correo" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium mb-2">Teléfono:</label>
-                                    <input type="tel" id="telefono" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium mb-2">Fecha de Nacimiento:</label>
-                                    <input type="date" id="fechaNacimiento" required class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium mb-2">Estatus:</label>
-                                    <select id="estatus" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:ring-2 focus:ring-blue-500">
-                                        <option value="activo">Activo</option>
-                                        <option value="vip">VIP</option>
-                                        <option value="suspendido">Suspendido</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-sm font-medium mb-2">Huella Biométrica:</label>
-                                <button type="button" id="captureFingerprint" class="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-md font-medium text-lg transition duration-200">
-                                    🔒 Capturar Huella Biométrica
-                                </button>
-                                <input type="hidden" id="huellaBiometrica">
-                            </div>
-                            
-                            <button type="submit" class="w-full px-6 py-4 bg-green-600 hover:bg-green-700 rounded-md font-medium text-lg transition duration-200">
-                                ✅ Registrar Cliente
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Sección: Lista de Clientes -->
-            <div id="lista-section" class="section">
-                <div class="bg-gray-800 rounded-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-semibold">Clientes Registrados</h3>
-                        <div class="text-sm text-gray-400">
-                            <span id="clientCount">0</span> clientes registrados
-                        </div>
-                    </div>
-                    <div id="clientsList" class="space-y-4">
-                        <!-- Lista de clientes se cargará aquí -->
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
+    </nav>
 
-    <script src="app.js"></script>
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-bg min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-40"></div>
+        <div class="relative z-10 text-center px-4 sm:px-6 lg:px-8">
+            <div class="float mb-8">
+                <div class="w-32 h-32 mx-auto mb-6 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <span class="text-6xl">🎵</span>
+                </div>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 neon-text">
+                CLUB ÉLITE
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
+                La experiencia nocturna más exclusiva de la ciudad. Tecnología biométrica, música de primera clase y un ambiente incomparable.
+            </p>
+            <div class="space-y-4 md:space-y-0 md:space-x-6 md:flex md:justify-center">
+                <button class="w-full md:w-auto bg-transparent border-2 border-white hover:bg-white hover:text-gray-900 px-8 py-4 rounded-lg text-lg font-semibold transition duration-200">
+                    📍 Ver Ubicación
+                </button>
+            </div>
+        </div>
+        
+        <!-- Floating elements -->
+        <div class="absolute top-20 left-10 text-4xl opacity-20 float" style="animation-delay: -1s;">🎶</div>
+        <div class="absolute top-40 right-20 text-5xl opacity-20 float" style="animation-delay: -2s;">🕺</div>
+        <div class="absolute bottom-32 left-20 text-3xl opacity-20 float" style="animation-delay: -0.5s;">💃</div>
+        <div class="absolute bottom-20 right-10 text-4xl opacity-20 float" style="animation-delay: -1.5s;">🎭</div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experiencia" class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text">
+                    Experiencia Única
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Combinamos tecnología de vanguardia con entretenimiento de clase mundial para crear momentos inolvidables.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card-hover bg-gray-800 rounded-lg p-8 text-center">
+                    <div class="text-6xl mb-4">🔒</div>
+                    <h3 class="text-2xl font-bold mb-4">Acceso Biométrico</h3>
+                    <p class="text-gray-300">
+                        Sistema de identificación por huella dactilar para una experiencia VIP sin interrupciones.
+                    </p>
+                </div>
+                
+                <div class="card-hover bg-gray-800 rounded-lg p-8 text-center">
+                    <div class="text-6xl mb-4">🎵</div>
+                    <h3 class="text-2xl font-bold mb-4">Música Premium</h3>
+                    <p class="text-gray-300">
+                        Los mejores DJs y un sistema de sonido de última generación para una experiencia auditiva incomparable.
+                    </p>
+                </div>
+                
+                <div class="card-hover bg-gray-800 rounded-lg p-8 text-center">
+                    <div class="text-6xl mb-4">🌟</div>
+                    <h3 class="text-2xl font-bold mb-4">Servicio VIP</h3>
+                    <p class="text-gray-300">
+                        Atención personalizada y servicios exclusivos para miembros con diferentes niveles de membresía.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="eventos" class="py-20 bg-gradient-to-r from-purple-900 via-blue-900 to-purple-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                    Próximos Eventos
+                </h2>
+                <p class="text-xl text-gray-200 max-w-3xl mx-auto">
+                    No te pierdas las noches más espectaculares con los mejores artistas internacionales.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden card-hover">
+                    <div class="h-48 bg-gradient-to-br from-pink-500 to-violet-500 flex items-center justify-center">
+                        <span class="text-4xl">🎭</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Noche de Máscaras</h3>
+                        <p class="text-gray-300 mb-4">Una noche misteriosa y elegante</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-blue-400 font-semibold">15 Nov</span>
+                            <span class="bg-blue-600 px-3 py-1 rounded-full text-sm">Disponible</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden card-hover">
+                    <div class="h-48 bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                        <span class="text-4xl">🔥</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Latin Fire Night</h3>
+                        <p class="text-gray-300 mb-4">Ritmos latinos y energía pura</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-orange-400 font-semibold">22 Nov</span>
+                            <span class="bg-green-600 px-3 py-1 rounded-full text-sm">VIP</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden card-hover">
+                    <div class="h-48 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                        <span class="text-4xl">❄️</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Winter Beats</h3>
+                        <p class="text-gray-300 mb-4">Electronic & Progressive House</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-cyan-400 font-semibold">29 Nov</span>
+                            <span class="bg-purple-600 px-3 py-1 rounded-full text-sm">Exclusivo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="py-20 bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text">
+                    Contáctanos
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Únete a la experiencia más exclusiva de la ciudad. Reserva tu lugar en Club Élite.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Información</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-4">📍</span>
+                            <div>
+                                <p class="font-semibold">Ubicación</p>
+                                <p class="text-gray-300">Av. Principal #123, Zona Dorada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-4">📞</span>
+                            <div>
+                                <p class="font-semibold">Teléfono</p>
+                                <p class="text-gray-300">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-4">🕒</span>
+                            <div>
+                                <p class="font-semibold">Horarios</p>
+                                <p class="text-gray-300">Jue - Sáb: 9:00 PM - 3:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-4">📧</span>
+                            <div>
+                                <p class="font-semibold">Email</p>
+                                <p class="text-gray-300">info@clubelite.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Envíanos un Mensaje</h3>
+                    <form class="space-y-4">
+                        <div>
+                            <input type="text" placeholder="Nombre completo" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <input type="email" placeholder="Email" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <input type="tel" placeholder="Teléfono" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <textarea rows="4" placeholder="Mensaje" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3 rounded-lg font-semibold transition duration-200">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="text-3xl font-bold gradient-text mb-4">🎵 Club Élite</div>
+                <p class="text-gray-400 mb-6">La experiencia nocturna más exclusiva de la ciudad</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-200">
+                        <span class="text-2xl">📘</span>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-200">
+                        <span class="text-2xl">📷</span>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-200">
+                        <span class="text-2xl">🐦</span>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition duration-200">
+                        <span class="text-2xl">🎵</span>
+                    </a>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8">
+                    <p class="text-gray-500">&copy; 2024 Club Élite. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Form submission (placeholder)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+        });
+    </script>
+    
+    <!-- Admin access script (hidden) -->
+    <script src="admin-access.js"></script>
 </body>
 </html>

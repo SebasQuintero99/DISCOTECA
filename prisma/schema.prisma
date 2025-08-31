@@ -12,13 +12,29 @@ datasource db {
 
 model Cliente {
   id                Int      @id @default(autoincrement())
+  nombres           String
+  apellidos         String
   correo            String   @unique
   telefono          String
   fechaNacimiento   DateTime @map("fecha_nacimiento")
+  sexo              String   @default("masculino")
   estatus           String   @default("activo")
   huellaBiometrica  String?  @map("huella_biometrica")
   fechaRegistro     DateTime @default(now()) @map("fecha_registro")
   ultimaVisita      DateTime? @map("ultima_visita")
 
   @@map("clientes")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  rol       String   @default("admin")
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("usuarios")
 }

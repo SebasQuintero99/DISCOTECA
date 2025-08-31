@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Club Élite | Acceso Administrativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .glass-effect {
+            background: rgba(31, 41, 55, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="hero-bg min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+    <!-- Floating elements -->
+    <div class="absolute top-20 left-10 text-4xl opacity-20 float" style="animation-delay: -1s;">🔐</div>
+    <div class="absolute top-40 right-20 text-5xl opacity-20 float" style="animation-delay: -2s;">🔑</div>
+    <div class="absolute bottom-32 left-20 text-3xl opacity-20 float" style="animation-delay: -0.5s;">💳</div>
+    <div class="absolute bottom-20 right-10 text-4xl opacity-20 float" style="animation-delay: -1.5s;">🛡️</div>
+    
+    <div class="max-w-md w-full space-y-8 relative z-10">
+        <div class="text-center">
+            <div class="float mb-8">
+                <div class="w-24 h-24 mx-auto bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm mb-6">
+                    <img src="/img/huella-dactilar.png" alt="🔒" class="h-16 w-16" style="filter: invert(1) brightness(2);" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span style="display: none; font-size: 3rem;">🔒</span>
+                </div>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 neon-text">
+                CLUB ÉLITE
+            </h2>
+            <h3 class="text-2xl font-bold text-white mb-2">
+                Acceso Administrativo
+            </h3>
+            <p class="text-lg text-gray-200">
+                Sistema de Gestión Biométrica
+            </p>
+        </div>
+        
+        <form class="mt-8 space-y-6" id="loginForm">
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-200 mb-2">
+                        Usuario
+                    </label>
+                    <input 
+                        id="username" 
+                        name="username" 
+                        type="text" 
+                        required 
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        placeholder="Ingresa tu usuario"
+                    >
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-200 mb-2">
+                        Contraseña
+                    </label>
+                    <input 
+                        id="password" 
+                        name="password" 
+                        type="password" 
+                        required 
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        placeholder="Ingresa tu contraseña"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <button 
+                    type="submit" 
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200"
+                    id="loginBtn"
+                >
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </span>
+                    Iniciar Sesión
+                </button>
+            </div>
+
+            <div class="text-center">
+                <a href="#" class="text-sm text-gray-200 hover:text-white" id="registerLink">
+                    ¿No tienes cuenta? Registrarse
+                </a>
+            </div>
+        </form>
+
+        <!-- Formulario de registro (oculto por defecto) -->
+        <form class="mt-8 space-y-6 hidden" id="registerForm">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-white mb-4">Registrarse</h2>
+            </div>
+            
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="reg-username" class="block text-sm font-medium text-gray-200 mb-2">
+                        Usuario
+                    </label>
+                    <input 
+                        id="reg-username" 
+                        name="username" 
+                        type="text" 
+                        required 
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="Elige un usuario"
+                    >
+                </div>
+                <div>
+                    <label for="reg-email" class="block text-sm font-medium text-gray-200 mb-2">
+                        Email
+                    </label>
+                    <input 
+                        id="reg-email" 
+                        name="email" 
+                        type="email" 
+                        required 
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="tu@email.com"
+                    >
+                </div>
+                <div>
+                    <label for="reg-password" class="block text-sm font-medium text-gray-200 mb-2">
+                        Contraseña
+                    </label>
+                    <input 
+                        id="reg-password" 
+                        name="password" 
+                        type="password" 
+                        required 
+                        class="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        placeholder="Elige una contraseña"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <button 
+                    type="submit" 
+                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-200"
+                >
+                    Registrarse
+                </button>
+            </div>
+
+            <div class="text-center">
+                <a href="#" class="text-sm text-gray-200 hover:text-white" id="loginLink">
+                    ¿Ya tienes cuenta? Iniciar Sesión
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
