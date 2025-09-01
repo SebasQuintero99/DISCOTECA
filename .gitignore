@@ -12,5 +12,5 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
-Dockerfile
-docker-compose.yml
+Dockerfile.local
+docker-compose.yml.local
